@@ -16,7 +16,11 @@ const provider = new common.SimpleAuthenticationDetailsProvider(
     process.env.OCI_REGION
 );
 
-const computeClient = new core.ComputeClient({ authenticationDetailsProvider: provider });
+const computeClient = new core.ComputeClient({
+    authenticationDetailsProvider: provider
+});
+
+computeClient.region = process.env.OCI_REGION;
 
 // 🔌 LIGAR VM
 app.get("/ligar", async (req, res) => {
