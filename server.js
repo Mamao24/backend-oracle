@@ -3,7 +3,7 @@ const cors = require("cors");
 const common = require("oci-common");
 const core = require("oci-core");
 
-const app = express();
+const app = express(); // ← ESSA LINHA FALTAVA
 app.use(cors());
 
 // 🔐 Config Oracle
