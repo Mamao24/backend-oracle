@@ -6,12 +6,15 @@ const core = require("oci-core");
 const app = express();
 app.use(cors());
 
+// 👇 CORREÇÃO: Pega a chave do Render e força as quebras de linha corretamente
+const privateKey = (process.env.OCI_KEY || "").replace(/\\n/g, '\n');
+
 // 🔐 Provider (SEM region aqui)
 const provider = new common.SimpleAuthenticationDetailsProvider(
     process.env.OCI_TENANCY,
     process.env.OCI_USER,
     process.env.OCI_FINGERPRINT,
-    process.env.OCI_KEY,
+    privateKey, // Usando a chave corrigida aqui
     null,
     null
 );
