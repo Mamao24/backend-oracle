@@ -1,24 +1,31 @@
-const express = require("express");
-const cors = require("cors");
+// LIGAR
+app.get("/ligar", async (req, res) => {
+    try {
+        await computeClient.instanceAction({
+            instanceId: process.env.OCI_INSTANCE,
+            action: "START"
+        });
 
-const app = express();
-app.use(cors());
-
-// TESTE
-app.get("/", (req, res) => {
-    res.send("API funcionando");
+        console.log("VM LIGANDO...");
+        res.send("VM ligando...");
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("Erro ao ligar");
+    }
 });
 
-// LIGAR VM
-app.get("/ligar", (req, res) => {
-    console.log("Ligando VM...");
-    res.send("Comando de ligar enviado");
-});
+// DESLIGAR
+app.get("/desligar", async (req, res) => {
+    try {
+        await computeClient.instanceAction({
+            instanceId: process.env.OCI_INSTANCE,
+            action: "STOP"
+        });
 
-// DESLIGAR VM
-app.get("/desligar", (req, res) => {
-    console.log("Desligando VM...");
-    res.send("Comando de desligar enviado");
+        console.log("VM DESLIGANDO...");
+        res.send("VM desligando...");
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("Erro ao desligar");
+    }
 });
-
-app.listen(3000, () => console.log("Servidor rodando"));
