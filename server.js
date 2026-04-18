@@ -3,24 +3,30 @@ const cors = require("cors");
 const common = require("oci-common");
 const core = require("oci-core");
 
-const app = express(); // ← ESSA LINHA FALTAVA
+const app = express();
 app.use(cors());
 
-// 🔐 Config Oracle
+// 🔐 Provider (SEM region aqui)
 const provider = new common.SimpleAuthenticationDetailsProvider(
     process.env.OCI_TENANCY,
     process.env.OCI_USER,
     process.env.OCI_FINGERPRINT,
     process.env.OCI_KEY,
     null,
-    process.env.OCI_REGION
+    null
 );
 
+// 🔌 Cliente Oracle
 const computeClient = new core.ComputeClient({
     authenticationDetailsProvider: provider
 });
 
-computeClient.region = process.env.OCI_REGION;
+// 🔥 FORÇA REGIÃO CORRETAMENTE
+computeClient.region = common.Region.fromRegionId(process.env.OCI_REGION);
+
+// 🧪 DEBUG (pode remover depois)
+console.log("REGION:", process.env.OCI_REGION);
+console.log("INSTANCE:", process.env.OCI_INSTANCE);
 
 // 🔌 LIGAR VM
 app.get("/ligar", async (req, res) => {
@@ -33,8 +39,8 @@ app.get("/ligar", async (req, res) => {
         console.log("VM LIGANDO...");
         res.send("VM ligando...");
     } catch (err) {
-        console.error(err);
-        res.status(500).send("Erro ao ligar");
+        console.error("ERRO AO LIGAR:", err);
+        res.status(500).send("Erro ao ligar VM");
     }
 });
 
@@ -49,17 +55,18 @@ app.get("/desligar", async (req, res) => {
         console.log("VM DESLIGANDO...");
         res.send("VM desligando...");
     } catch (err) {
-        console.error(err);
-        res.status(500).send("Erro ao desligar");
+        console.error("ERRO AO DESLIGAR:", err);
+        res.status(500).send("Erro ao desligar VM");
     }
 });
 
-// TESTE
+// 🌐 ROTA TESTE
 app.get("/", (req, res) => {
     res.send("API funcionando");
 });
 
+// 🚀 START
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log("Servidor rodando"));
-
-console.log("REGION:", process.env.OCI_REGION);
+app.listen(PORT, () => {
+    console.log("Servidor rodando na porta", PORT);
+});
