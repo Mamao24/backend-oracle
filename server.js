@@ -1,4 +1,24 @@
-// LIGAR
+const express = require("express");
+const cors = require("cors");
+const common = require("oci-common");
+const core = require("oci-core");
+
+const app = express();
+app.use(cors());
+
+// 🔐 Config Oracle
+const provider = new common.SimpleAuthenticationDetailsProvider(
+    process.env.OCI_TENANCY,
+    process.env.OCI_USER,
+    process.env.OCI_FINGERPRINT,
+    process.env.OCI_KEY,
+    null,
+    process.env.OCI_REGION
+);
+
+const computeClient = new core.ComputeClient({ authenticationDetailsProvider: provider });
+
+// 🔌 LIGAR VM
 app.get("/ligar", async (req, res) => {
     try {
         await computeClient.instanceAction({
@@ -14,7 +34,7 @@ app.get("/ligar", async (req, res) => {
     }
 });
 
-// DESLIGAR
+// 🔌 DESLIGAR VM
 app.get("/desligar", async (req, res) => {
     try {
         await computeClient.instanceAction({
@@ -29,3 +49,11 @@ app.get("/desligar", async (req, res) => {
         res.status(500).send("Erro ao desligar");
     }
 });
+
+// TESTE
+app.get("/", (req, res) => {
+    res.send("API funcionando");
+});
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log("Servidor rodando"));
